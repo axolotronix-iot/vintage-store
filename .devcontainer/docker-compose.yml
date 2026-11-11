@@ -1,0 +1,52 @@
+name: vintage-dev
+
+services:
+  workspace:
+    build:
+      # Repository root, so the Dockerfile can COPY the dependency manifests.
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    init: true
+    command: sleep infinity
+    environment:
+      # Development credentials only. Never reuse them outside this container.
+      DATABASE_URL: postgres://vintage:vintage@db:5432/vintage
+    volumes:
+      # Source code: the only bind mount.
+      - ..:/workspace
+      # Seeded from the image on first creation; kept in sync by post-create.sh.
+      - node_modules:/workspace/frontend/node_modules
+      # Runtime caches and tool data: named volumes (bind mounts are slow on WSL2).
+      - uv_cache:/home/node/.cache/uv
+      # OpenCode login and configuration survive container rebuilds.
+      # To share one login across projects, give these volumes a fixed
+      # `name:` in the volumes section below.
+      - opencode_config:/home/node/.config/opencode
+      - opencode_data:/home/node/.local/share/opencode
+      - opencode_state:/home/node/.local/state/opencode
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    # Pin the major version and bump it deliberately.
+    image: postgres:17
+    environment:
+      POSTGRES_DB: vintage
+      POSTGRES_USER: vintage
+      POSTGRES_PASSWORD: vintage
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vintage -d vintage"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  node_modules:
+  uv_cache:
+  opencode_config:
+  opencode_data:
+  opencode_state:
+  pgdata:

@@ -1,0 +1,17 @@
+[project]
+name = "vintage-backend"
+version = "0.1.0"
+description = "Inventory, bazaar sales and storefront backend"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "django>=5.2,<5.3",
+    "psycopg[binary]>=3.3,<4",
+    "django-vite>=3.2,<4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9,<10",
+    "pytest-django>=4.14,<5",
+    "ruff>=0.17,<0.18",
+]
