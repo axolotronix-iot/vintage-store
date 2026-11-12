@@ -15,3 +15,15 @@ dev = [
     "pytest-django>=4.14,<5",
     "ruff>=0.17,<0.18",
 ]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
