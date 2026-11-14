@@ -1,0 +1,66 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // v2: gana la ÚLTIMA regla que coincide. Va primero lo general y al final
+  // las excepciones y las prohibiciones. Sin regla que coincida, la acción es "ask".
+  "permissions": [
+    // ---- shell: todo pregunta, salvo lo que se permite abajo ----
+    { "action": "shell", "resource": "*", "effect": "ask" },
+
+    // Lectura e inspección
+    { "action": "shell", "resource": "ls *", "effect": "allow" },
+    { "action": "shell", "resource": "pwd", "effect": "allow" },
+    { "action": "shell", "resource": "rg *", "effect": "allow" },
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" },
+    { "action": "shell", "resource": "git show *", "effect": "allow" },
+
+    // Comandos del proyecto (ver Makefile)
+    { "action": "shell", "resource": "make test *", "effect": "allow" },
+    { "action": "shell", "resource": "make lint *", "effect": "allow" },
+    { "action": "shell", "resource": "make fmt *", "effect": "allow" },
+    { "action": "shell", "resource": "make check *", "effect": "allow" },
+    { "action": "shell", "resource": "make build *", "effect": "allow" },
+    { "action": "shell", "resource": "pytest *", "effect": "allow" },
+    { "action": "shell", "resource": "ruff *", "effect": "allow" },
+    { "action": "shell", "resource": "python manage.py check *", "effect": "allow" },
+    { "action": "shell", "resource": "python manage.py makemigrations *", "effect": "allow" },
+    { "action": "shell", "resource": "npm run build *", "effect": "allow" },
+
+    // git: add y commit preguntan (caen en la regla general). Prohibido lo destructivo.
+    { "action": "shell", "resource": "git push *", "effect": "deny" },
+    { "action": "shell", "resource": "git reset *", "effect": "deny" },
+    { "action": "shell", "resource": "git clean *", "effect": "deny" },
+    { "action": "shell", "resource": "git rebase *", "effect": "deny" },
+    { "action": "shell", "resource": "git branch -D *", "effect": "deny" },
+    { "action": "shell", "resource": "git config *", "effect": "deny" },
+
+    // Dependencias: solo las cambia el arquitecto (lockfile + reconstruir imagen).
+    // "uv *" completo: incluso "uv run" y "uv sync" pueden modificar uv.lock.
+    { "action": "shell", "resource": "uv *", "effect": "deny" },
+    { "action": "shell", "resource": "pip *", "effect": "deny" },
+    { "action": "shell", "resource": "pip3 *", "effect": "deny" },
+    { "action": "shell", "resource": "python -m pip *", "effect": "deny" },
+    { "action": "shell", "resource": "npm install *", "effect": "deny" },
+    { "action": "shell", "resource": "npm i *", "effect": "deny" },
+    { "action": "shell", "resource": "npm ci *", "effect": "deny" },
+    { "action": "shell", "resource": "npm uninstall *", "effect": "deny" },
+    { "action": "shell", "resource": "npm update *", "effect": "deny" },
+
+    { "action": "shell", "resource": "sudo *", "effect": "deny" },
+
+    // ---- edición: protege entorno, lockfiles y .git ----
+    // Los patrones empiezan con * para coincidir con ruta relativa o absoluta.
+    { "action": "edit", "resource": "*.devcontainer/*", "effect": "deny" },
+    { "action": "edit", "resource": "*uv.lock", "effect": "deny" },
+    { "action": "edit", "resource": "*package-lock.json", "effect": "deny" },
+    { "action": "edit", "resource": "*/.git/*", "effect": "deny" },
+    { "action": "edit", "resource": "*.env", "effect": "deny" },
+    { "action": "edit", "resource": "*AGENTS.md", "effect": "ask" },
+    { "action": "edit", "resource": "*opencode.jsonc", "effect": "ask" },
+
+    // ---- fuera del proyecto: por defecto v2 lo permite sin preguntar ----
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
+  ],
+}

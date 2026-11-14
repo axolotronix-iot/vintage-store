@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(make test *)",
+      "Bash(make lint *)",
+      "Bash(make fmt *)",
+      "Bash(make check *)",
+      "Bash(make build *)",
+      "Bash(pytest *)",
+      "Bash(ruff *)",
+      "Bash(python manage.py check *)",
+      "Bash(python manage.py makemigrations *)",
+      "Bash(npm run build *)"
+    ],
+    "deny": [
+      "Bash(uv *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(python -m pip *)",
+      "Bash(python3 -m pip *)",
+      "Bash(npm install *)",
+      "Bash(npm i *)",
+      "Bash(npm ci *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm update *)",
+      "Bash(git push *)",
+      "Bash(git reset *)",
+      "Bash(git clean *)",
+      "Bash(git rebase *)",
+      "Bash(git branch -D *)",
+      "Bash(git config *)",
+      "Bash(sudo *)",
+      "Edit(/.devcontainer/**)",
+      "Edit(**/uv.lock)",
+      "Edit(**/package-lock.json)",
+      "Edit(**/.env)",
+      "Read(**/.env)"
+    ],
+    "ask": [
+    "Bash(git add *)",
+    "Bash(git commit *)",
+    "Edit(**/AGENTS.md)",
+    "Edit(**/CLAUDE.md)",
+    "Edit(/opencode.jsonc)",
+    "Edit(/.claude/**)"
+    ],
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "disableAutoMode": "disable"
+  }
+}
