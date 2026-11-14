@@ -1,6 +1,6 @@
 # Architect handoff
 
-Last updated: 2026-11-12. Keep this file short and current; replace stale items instead of appending.
+Last updated: 2026-11-14. Keep this file short and current; replace stale items instead of appending.
 
 ## How we work
 
@@ -26,7 +26,7 @@ Pending:
 - Spike 3: real data import with quarantine.
 - Restrict the Claude agent (`.claude/settings.json`) and check the limits actually hold in the VS Code extension.
 - Design review (DRY, SOLID, KISS or whatever fits): first topics are where domain code lives and the single service for state transitions.
-- Reconcile AGENTS.md section 6 with `docs/resumen-proyecto-vintage.md` sections 4 and 10. Known gaps: the state field is read-only in the admin and operators use explicit actions; JavaScript never holds business rules; `make check` should also run a typecheck (none is configured yet).
+- `make check` has no typecheck yet; the project summary (section 10) expects one.
 - Write the spec for the next block (given/when/then, acceptance criteria mapped to tests, explicit out-of-scope) in `docs/specs/`. Record design decisions in `docs/adr/`.
 - Evaluate more OpenCode models with the protocol below.
 
@@ -44,6 +44,8 @@ Pending:
 
 - Money as integer cents (what AGENTS.md says) or `Decimal`. The summary allows either.
 - Where domain code lives. No apps layout exists yet; the health view ended up in `backend/config/`.
+- Late payment on the storefront. The summary contradicts itself: section 4.3 rejects a payment that arrives after the hold expired until the operator reactivates the hold; section 8 sells the piece if it is still free and refunds otherwise. AGENTS.md scopes the 4.3 rule to bazaar transfer holds until this is decided.
+- How to model a piece that is "migrating" from GoTrendier (summary section 14: it must not appear as purchasable anywhere). It is none of the four states or four channels.
 
 ## Lessons learned
 
