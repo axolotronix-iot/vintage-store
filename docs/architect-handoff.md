@@ -6,6 +6,8 @@ Last updated: 2026-11-14. Keep this file short and current; replace stale items 
 
 - The architect designs an agentic workflow. A tester verifies behavior and the reports feed back to the agents.
 - Build block by block. Validate each block before starting the next.
+- The spikes measure the agentic workflow, but their code is kept: this workspace evolves into the full application. Each spike is a normal block with a spec and the full definition of done.
+- One git branch per attempt, created by the architect from the same base commit. It merges into main only if the block passes the architect's review and the tester. A failed attempt is discarded.
 - Implementation: OpenCode v2 (2.2.7) with free models (for example `opencode/beam-free`). The Claude agent evaluates them and refines the configuration.
 
 ## State
@@ -24,8 +26,13 @@ Pending:
 
 - Spike 2: domain core (states, atomic reservation, audit in the same transaction, concurrency test).
 - Spike 3: real data import with quarantine.
-- Restrict the Claude agent (`.claude/settings.json`) and check the limits actually hold in the VS Code extension.
-- Design review (DRY, SOLID, KISS or whatever fits): first topics are where domain code lives and the single service for state transitions.
+- Run the three block tests in Claude Code (`uv --version`, edit `uv.lock`, `git push`) and check the Manual mode indicator in the VS Code extension.
+- Remove the stray user-level `ask` rule that only says "CLAUDE.md".
+- Decide whether `Edit(/backend/**)` and `Edit(/frontend/src/**)` go in `ask` in `.claude/settings.json` to enforce the product-code limit.
+- Claude config and workspace trust are not persisted across container rebuilds; decide on a compose volume plus `CLAUDE_CONFIG_DIR`.
+- Translate the Spanish comments in `opencode.jsonc` and the `make help` strings in the Makefile to English.
+- Run `docs/specs/0001-accounts-custom-user.md` with OpenCode on branch `accounts-attempt-1`, before Spike 2 (ADR 0001). The architect recreates the development database empty before the run: it has `admin` and `auth` migrations applied with the default user.
+- Decide the format of the piece public code before block 3 (quick entry with QR).
 - `make check` has no typecheck yet; the project summary (section 10) expects one.
 - Write the spec for the next block (given/when/then, acceptance criteria mapped to tests, explicit out-of-scope) in `docs/specs/`. Record design decisions in `docs/adr/`.
 - Evaluate more OpenCode models with the protocol below.
@@ -39,11 +46,10 @@ Pending:
 - Printed QR labels on pieces are planned.
 - First public site is a simple showcase. Bazaar and warehouse management come first, then the transition from GoTrendier.
 - Spike plan has three pass/fail tests: pipeline (done), domain core and concurrency, real data import.
+- Domain code layout is recorded in `docs/adr/0001-domain-code-layout.md`.
 
 ## Open decisions (the architect must confirm)
 
-- Money as integer cents (what AGENTS.md says) or `Decimal`. The summary allows either.
-- Where domain code lives. No apps layout exists yet; the health view ended up in `backend/config/`.
 - Late payment on the storefront. The summary contradicts itself: section 4.3 rejects a payment that arrives after the hold expired until the operator reactivates the hold; section 8 sells the piece if it is still free and refunds otherwise. AGENTS.md scopes the 4.3 rule to bazaar transfer holds until this is decided.
 - How to model a piece that is "migrating" from GoTrendier (summary section 14: it must not appear as purchasable anywhere). It is none of the four states or four channels.
 

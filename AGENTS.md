@@ -64,6 +64,16 @@ Commands (run from the repository root):
     └── src/                # JS/CSS entry points (main.js, style.css)
 ```
 
+### Backend layout rules
+
+Decided in `docs/adr/0001-domain-code-layout.md`.
+
+- Domain code lives in Django apps under `backend/`: `accounts` (custom user) and `inventory` (piece, hold, audit, transitions). Do not create another app unless the spec of the block says so.
+- `inventory/services.py` is the only code that writes piece state, piece channel, holds or audit records. Views, admin, management commands and imports call it.
+- Other apps may read `inventory` models but never write them. `inventory` never imports an app that depends on it.
+- Refer to the user with `settings.AUTH_USER_MODEL` or `get_user_model()`. Never import `django.contrib.auth.models.User`.
+- Tests go in `backend/tests/<app>/`.
+
 ## 4. Working limits
 
 These limits are enforced by OpenCode through `opencode.jsonc`. Other agents (for example Claude Code) do not read that file: follow the limits anyway.
@@ -73,7 +83,7 @@ From `opencode.jsonc`:
 - **Dependencies:** never add, remove or update them. `uv`, `pip`, `pip3`, `python -m pip`, `npm install/i/ci/uninstall/update` are denied. Only the architect changes dependencies (lockfile + image rebuild).
 - **Protected files (no edits):** `.devcontainer/*`, `uv.lock`, `package-lock.json`, `.git/*`, `.env`.
 - **Edit only with approval:** `AGENTS.md`, `opencode.jsonc`.
-- **Git:** `status`, `diff`, `log`, `show` are allowed. `add` and `commit` require approval. `push`, `reset`, `clean`, `rebase`, `branch -D` and `config` are denied.
+- **Git:** `status`, `diff`, `log`, `show` are allowed. `add` and `commit` require approval. `push`, `reset`, `clean`, `rebase`, `branch -D` and `config` are denied. Work on the current branch: the architect creates one branch per attempt. Never create or switch branches.
 - **Shell:** anything not explicitly allowed asks first. Allowed: `ls`, `pwd`, `rg`, `make test/lint/fmt/check/build`, `pytest`, `ruff`, `python manage.py check`, `python manage.py makemigrations`, `npm run build`. `sudo` is denied.
 - **Outside the project:** access to external directories requires approval.
 
@@ -93,11 +103,13 @@ These rules are intent: some have no code yet. When you implement or touch one, 
 ### Inventory
 
 - A piece is unique. Never model quantity or stock counts.
+- A piece has a public code: short, unique, assigned at creation, never changed or reused. URLs, QR labels and messages use it, never the database id.
 - A piece is offered in exactly one channel at a time: warehouse, event, website or GoTrendier. While a piece is assigned to an event it does not accept online reservations and is not shown as purchasable online.
 - Piece states are: available, reserved, sold, withdrawn. Do not invent other states or channels without asking.
 - A hold (reservation) has an expiry. When it expires, the piece returns to the state and channel it had before the hold, not blindly to "available".
 - A hold is one mechanism for every context. For bazaar transfers its duration is configured per event.
 - An operator can extend a hold once, with a recorded reason. A second extension is rejected.
+- Expired holds are released by a management command. Every service operation also treats a hold past its expiry as expired, even if the command has not run.
 - For bazaar transfer holds, a payment confirmation that arrives after the hold expired is rejected until an operator reactivates the hold. Reactivating a hold is rejected if the piece was sold to someone else.
 - State and channel changes must be atomic in PostgreSQL: use a conditional `UPDATE ... WHERE state = <expected>` and check the affected row count. Never read-then-write in Python. Two simultaneous attempts on the same piece: exactly one succeeds.
 - Every state or channel change writes an audit record (who, when, from, to, reason) in the same transaction. If the audit write fails, the change rolls back.
@@ -105,7 +117,7 @@ These rules are intent: some have no code yet. When you implement or touch one, 
 
 ### Manual actions and admin
 
-- Every transition requires a reason and is rejected without one. Automatic transitions (for example hold expiry) record a system reason.
+- Every transition requires a reason and is rejected without one. Automatic transitions (for example hold expiry) record a system reason and no user.
 - Withdrawing a piece, recording a sale made outside the platform, reactivating a hold, and returning a withdrawn piece to available each require their own permission. Returning a withdrawn piece is only for data-entry errors and needs supervisor permission.
 - An action that affects a buyer with an active hold or a pending payment requires a two-step confirmation.
 - In Django admin the state and channel fields are read-only. Operators change them only through explicit actions that call the domain service.
