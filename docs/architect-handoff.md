@@ -21,6 +21,7 @@ Done and checked by the architect:
 - `opencode.jsonc` blocks `uv` commands and edits to `uv.lock`.
 - OpenCode loads AGENTS.md and answers questions about it correctly.
 - One small task was run with `opencode/beam-free` (health endpoint).
+- `accounts` app with the custom user (spec 0001, ADR 0001), written by `opencode/beam-free`, merged into main. The development database was recreated and migrated with it.
 
 Pending:
 
@@ -31,7 +32,7 @@ Pending:
 - Decide whether `Edit(/backend/**)` and `Edit(/frontend/src/**)` go in `ask` in `.claude/settings.json` to enforce the product-code limit.
 - Claude config and workspace trust are not persisted across container rebuilds; decide on a compose volume plus `CLAUDE_CONFIG_DIR`.
 - Translate the Spanish comments in `opencode.jsonc` and the `make help` strings in the Makefile to English.
-- Run `docs/specs/0001-accounts-custom-user.md` with OpenCode on branch `accounts-attempt-1`, before Spike 2 (ADR 0001). The architect recreates the development database empty before the run: it has `admin` and `auth` migrations applied with the default user.
+- Decide whether `backend/tests/<app>/` directories need `__init__.py` (two test files with the same name in different apps may collide; not tested).
 - Decide the format of the piece public code before block 3 (quick entry with QR).
 - `make check` has no typecheck yet; the project summary (section 10) expects one.
 - Write the spec for the next block (given/when/then, acceptance criteria mapped to tests, explicit out-of-scope) in `docs/specs/`. Record design decisions in `docs/adr/`.
@@ -81,4 +82,4 @@ Results so far:
 - `opencode/beam-free`, load test: correct answers, 9,713 tokens (5,161 in, 72 out, 192 reasoning, 4,288 cache).
 - `opencode/beam-free`, health endpoint task: ran lint, check, migrations check, pytest and build separately instead of `make check`. Added an unrequested second route and test. Placed the view in `backend/config/` because AGENTS.md does not say where code lives. No commit, no dependency changes. Report was honest about what it did not verify.
 
-Record future results in `docs/model-evaluations.md`.
+Later results are in `docs/model-evaluations.md`. A spec with an explicit out-of-scope section kept `beam-free` inside the scope on spec 0001.

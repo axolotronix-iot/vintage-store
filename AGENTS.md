@@ -57,6 +57,7 @@ Commands (run from the repository root):
 ├── .devcontainer/          # Container image, compose (workspace + db), post-create and doctor scripts
 ├── backend/                # Django project (pyproject.toml, uv.lock, manage.py)
 │   ├── config/             # Django settings, URLs, WSGI/ASGI
+│   ├── accounts/           # Custom user model (AUTH_USER_MODEL = "accounts.User")
 │   ├── templates/          # Project-level Django templates (base.html, home.html)
 │   ├── tests/              # pytest test suite
 │   └── frontend_dist/      # Vite build output read by django-vite (generated, git-ignored)
