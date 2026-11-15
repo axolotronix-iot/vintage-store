@@ -26,15 +26,15 @@ Done and checked by the architect:
 
 Pending:
 
-- Spike 3: real data import with quarantine.
-- Inventory follow-ups from the review of spec 0002: assert state and channel in the AC9 and AC10 tests, add a criterion for `test_expires_at_validation`, and stop `expire_holds` from locking every reserved piece in one transaction.
-- Measure in the next block whether `beam-free` obeys the two new rules in AGENTS.md section 4 (no file edits from the shell, no chained commands).
+- Rebuild the container (steps in `README.md`). The compose file now has a `claude_config` volume and `CLAUDE_CONFIG_DIR`, and `uv.lock` has openpyxl 3.1.5. After the rebuild restore the Claude Code backup, then check `doctor.sh`, `make check`, the OpenCode sessions and that Claude Code keeps its login.
+- Spike 3, block A: run `docs/specs/0003-piece-public-code.md` with OpenCode on branch `public-code-attempt-1`, in a new session. It also closes the three review findings of spec 0002 and measures whether `beam-free` obeys the two new rules in AGENTS.md section 4 (no file edits from the shell, no chained commands).
+- Spike 3, block B (spec 0004, not written): `catalog` app with vocabularies (brand with aliases, category, size, condition enum) and the piece details, one-to-one with the piece, with the list price in cents.
+- Spike 3, block C (spec 0005, not written): `.xlsx` importer with quarantine. One batch per file and one record per row, imported or quarantined; a management command prints the totals and the quarantine rate.
+- Spike 3, step D: measure with the real sample. The customer has not delivered it yet. The real file stays out of git and no OpenCode agent reads it.
 - Run the three block tests in Claude Code (`uv --version`, edit `uv.lock`, `git push`) and check the Manual mode indicator in the VS Code extension.
 - Remove the stray user-level `ask` rule that only says "CLAUDE.md".
 - Decide whether `Edit(/backend/**)` and `Edit(/frontend/src/**)` go in `ask` in `.claude/settings.json` to enforce the product-code limit.
-- Claude config and workspace trust are not persisted across container rebuilds; decide on a compose volume plus `CLAUDE_CONFIG_DIR`.
 - Translate the Spanish comments in `opencode.jsonc` and the `make help` strings in the Makefile to English.
-- Decide the format of the piece public code before block 3 (quick entry with QR).
 - `make check` has no typecheck yet; the project summary (section 10) expects one.
 - Write the spec for the next block (given/when/then, acceptance criteria mapped to tests, explicit out-of-scope) in `docs/specs/`. Record design decisions in `docs/adr/`.
 - Evaluate more OpenCode models with the protocol below.
@@ -49,6 +49,9 @@ Pending:
 - First public site is a simple showcase. Bazaar and warehouse management come first, then the transition from GoTrendier.
 - Spike plan has three pass/fail tests: pipeline (done), domain core and concurrency (done), real data import.
 - Domain code layout is recorded in `docs/adr/0001-domain-code-layout.md`.
+- Piece public code: 6 random characters, recorded in `docs/adr/0002-piece-public-code.md`.
+- Spike 3 decisions (2026-11-15): catalog data lives in a new `catalog` app that depends on `inventory`; the importer reads `.xlsx` with openpyxl; the blocks are built with synthetic data until the real sample arrives.
+- One new OpenCode session per block and per attempt, because the root AGENTS.md loads only at session start. The same session is used only for the correction pass of that attempt.
 
 ## Open decisions (the architect must confirm)
 

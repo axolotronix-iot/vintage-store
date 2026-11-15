@@ -22,6 +22,7 @@ Versions (installed in the container):
 | Node / npm | 22.23.4 / 10.9.9 |
 | Django | 5.2.19 |
 | psycopg | 3.3.8 |
+| openpyxl | 3.1.5 |
 | django-vite | 3.2.0 |
 | pytest / pytest-django | 9.2.0 / 4.14.0 |
 | ruff | 0.17.4 |
@@ -49,6 +50,7 @@ Commands (run from the repository root):
 
 ```
 .
+├── README.md               # Setup, workflow and how to rebuild the container
 ├── Makefile                # Project commands
 ├── opencode.jsonc          # OpenCode permission rules
 ├── AGENTS.md               # Instructions for coding agents
@@ -110,7 +112,7 @@ These rules are intent: some have no code yet. When you implement or touch one, 
 ### Inventory
 
 - A piece is unique. Never model quantity or stock counts.
-- A piece has a public code: short, unique, assigned at creation, never changed or reused. URLs, QR labels and messages use it, never the database id.
+- A piece has a public code: short, unique, assigned at creation, never changed or reused. URLs, QR labels and messages use it, never the database id. It is 6 random characters from `23456789ABCDEFGHJKMNPQRSTVWXYZ`, generated when the piece is created (`docs/adr/0002-piece-public-code.md`).
 - A piece is offered in exactly one channel at a time: warehouse, event, website or GoTrendier. While a piece is assigned to an event it does not accept online reservations and is not shown as purchasable online.
 - Piece states are: available, reserved, sold, withdrawn. Do not invent other states or channels without asking.
 - A hold (reservation) has an expiry. When it expires, the piece returns to the state and channel it had before the hold, not blindly to "available".
