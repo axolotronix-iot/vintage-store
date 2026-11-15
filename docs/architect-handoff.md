@@ -25,7 +25,8 @@ Done and checked by the architect:
 
 Pending:
 
-- Spike 2: run `docs/specs/0002-inventory-domain-core.md` with OpenCode on a new attempt branch.
+- Spike 2: run `docs/specs/0002-inventory-domain-core.md` (revision 2) with OpenCode on branch `inventory-attempt-2`, in a new session. Attempt 1 failed review and is kept on `inventory-attempt-1` (see `docs/model-evaluations.md`).
+- Check whether OpenCode asks for approval on chained commands outside the allowlist (`cd x && cat ...`, `find`, `git branch -a`): the accounts session ran them.
 - Spike 3: real data import with quarantine.
 - Run the three block tests in Claude Code (`uv --version`, edit `uv.lock`, `git push`) and check the Manual mode indicator in the VS Code extension.
 - Remove the stray user-level `ask` rule that only says "CLAUDE.md".
@@ -61,6 +62,8 @@ Pending:
 - Claude Code: `deny` beats `ask` beats `allow`, and specificity does not matter. `Edit` rules cover every editing tool. Bash rules are not a security boundary (`git -C . push` and `sh -c '...'` get past them). With a `CLAUDE.md` present, Claude reads it instead of `AGENTS.md`, which is why it imports `@AGENTS.md`.
 - The VS Code extension has had reports of commands running without a prompt in manual mode. Test the limits after configuring them.
 - The OpenCode background service requests `GET /health` on port 8000 about once a minute (observed 2026-11-14). The 404 lines in the dev server log come from it, not from project code. The cause was not investigated.
+- Specs must name the public functions, models, fields and tests. When names were left open, `beam-free` accepted any argument order and added aliases for "hidden tests".
+- One new OpenCode session per attempt. For cumulative tokens and steps use `opencode session list` and `opencode session export <id>`; the session panel shows only the last request.
 - Docker: a named volume is seeded from the image only on first creation. `post-create.sh` re-syncs `node_modules` using a lockfile hash stamp.
 
 ## Model evaluation protocol
