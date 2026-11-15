@@ -2,6 +2,53 @@
 
 One entry per run, newest first. The protocol is in `docs/architect-handoff.md` ("Model evaluation protocol").
 
+## 2026-11-15: `opencode/beam-free`, spec 0002 revision 2 (inventory domain core), attempt 2
+
+Branch `inventory-attempt-2`, new session. Result: passed after one correction pass, merged into main.
+
+| Check | Result |
+|---|---|
+| Scope | Respected: only the `inventory` app, `settings.py` (1 line) and the three `__init__.py` files the spec asks for. |
+| Public interface | Exact names and keyword-only signatures. No aliases, no `*args` or `**kwargs`. |
+| Domain rules | One private function does the conditional `UPDATE` and the audit insert. A missing or unsaved user is rejected. Every foreign key is `PROTECT`. |
+| Tests | The 17 named tests exist; AC5 repeats 50 times. One extra test, `test_expires_at_validation`, covers the expiry rule, which has no criterion in the spec. |
+| `make check` | Run literally in both passes. Passes (39 tests after the correction). |
+| Limits | No commit, no `migrate`, no dependency change. |
+| Final report | Accurate, with the criterion-to-test table. It reported "1 warning" without saying what it was. |
+| Mechanism | Sound. Reviewer probes passed: a 50-repetition race with a barrier, rollback of the lazy expiry when the call is rejected, rollback when the audit insert fails. |
+| Manual test by the architect | Create, send to event, hold, two rejections, release, hold and expiry by the command gave the expected states and six audit records, the last one with no user. |
+
+Defects found in review and fixed in the correction pass, same session:
+
+- The AC5 test left its thread connections open: pytest could not drop `test_vintage` and warned about it. It also had no barrier.
+- One test contained only `pass`.
+- The AC9 and AC10 cases for `return_to_warehouse`, `release_hold` and `extend_hold` used a piece that would be rejected anyway. After the fix, disabling either validator makes all seven cases of its test fail.
+- Every function turned `IntegrityError` into `InventoryError`, and the AC16 test depended on it.
+
+Cost and behavior, from `opencode session export`:
+
+| | Implementation | Correction pass |
+|---|---|---|
+| Assistant steps | 36 | 46 |
+| Tokens in | 73,689 | 112,290 |
+| Tokens out | 9,634 | 6,935 |
+| Reasoning tokens | 7,462 | 2,886 |
+| Cache read | 985,344 | 2,210,816 |
+| Tool calls (failed) | 43 (2) | 45 (1) |
+
+- Cost 0.00 USD. The implementation took 311 seconds; the correction pass has no usable duration because it includes waits for approval.
+- Fixing four small defects cost more than writing the block. The model edited files with `python3 - <<EOF` scripts and `sed -i` instead of the edit tool. One global replace changed the expected exception in two unrelated tests, and it needed seven `pytest` runs to repair them.
+- It prefixes almost every command with `cd /workspace/backend &&`, so allowed commands (`pytest`, `ruff`) asked for approval too. OpenCode asked the architect for every chained command.
+- The reasoning mentions hidden tests once, against 97 times in attempt 1.
+
+Rule changes from this run: AGENTS.md section 4 now forbids editing files from the shell and chaining commands.
+
+Left as follow-ups, none blocking:
+
+- The AC9 and AC10 tests do not assert the state and channel of the piece after the rejection.
+- `expire_holds` locks every reserved piece in one transaction and repeats the logic of the lazy expiry.
+- `test_expires_at_validation` is not in the spec.
+
 ## 2026-11-15: `opencode/beam-free`, spec 0002 revision 1 (inventory domain core), attempt 1
 
 Branch `inventory-attempt-1`, kept but not merged. Result: failed the architect's review.

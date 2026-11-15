@@ -22,12 +22,13 @@ Done and checked by the architect:
 - OpenCode loads AGENTS.md and answers questions about it correctly.
 - One small task was run with `opencode/beam-free` (health endpoint). Its code was removed afterwards.
 - `accounts` app with the custom user (spec 0001, ADR 0001), written by `opencode/beam-free`, merged into main. The development database was recreated and migrated with it.
+- Spike 2: `inventory` app (spec 0002 revision 2), written by `opencode/beam-free` on `inventory-attempt-2`, merged into main after one correction pass and the architect's manual test. The development database has `inventory.0001_initial` and one test piece, which the audit protects from deletion. Attempt 1 is kept on `inventory-attempt-1`.
 
 Pending:
 
-- Spike 2: run `docs/specs/0002-inventory-domain-core.md` (revision 2) with OpenCode on branch `inventory-attempt-2`, in a new session. Attempt 1 failed review and is kept on `inventory-attempt-1` (see `docs/model-evaluations.md`).
-- Check whether OpenCode asks for approval on chained commands outside the allowlist (`cd x && cat ...`, `find`, `git branch -a`): the accounts session ran them.
 - Spike 3: real data import with quarantine.
+- Inventory follow-ups from the review of spec 0002: assert state and channel in the AC9 and AC10 tests, add a criterion for `test_expires_at_validation`, and stop `expire_holds` from locking every reserved piece in one transaction.
+- Measure in the next block whether `beam-free` obeys the two new rules in AGENTS.md section 4 (no file edits from the shell, no chained commands).
 - Run the three block tests in Claude Code (`uv --version`, edit `uv.lock`, `git push`) and check the Manual mode indicator in the VS Code extension.
 - Remove the stray user-level `ask` rule that only says "CLAUDE.md".
 - Decide whether `Edit(/backend/**)` and `Edit(/frontend/src/**)` go in `ask` in `.claude/settings.json` to enforce the product-code limit.
@@ -46,7 +47,7 @@ Pending:
 - Payments: cash and bank transfer now. A webhook-based method is to be evaluated later.
 - Printed QR labels on pieces are planned.
 - First public site is a simple showcase. Bazaar and warehouse management come first, then the transition from GoTrendier.
-- Spike plan has three pass/fail tests: pipeline (done), domain core and concurrency, real data import.
+- Spike plan has three pass/fail tests: pipeline (done), domain core and concurrency (done), real data import.
 - Domain code layout is recorded in `docs/adr/0001-domain-code-layout.md`.
 
 ## Open decisions (the architect must confirm)
@@ -63,6 +64,8 @@ Pending:
 - The VS Code extension has had reports of commands running without a prompt in manual mode. Test the limits after configuring them.
 - The OpenCode background service requests `GET /health` on port 8000 about once a minute (observed 2026-11-14). The 404 lines in the dev server log come from it, not from project code. The cause was not investigated.
 - Specs must name the public functions, models, fields and tests. When names were left open, `beam-free` accepted any argument order and added aliases for "hidden tests".
+- OpenCode asks for approval on every chained command (`cd x && pytest`), even when the command itself is allowed. `beam-free` chains almost everything.
+- A correction pass can cost more than the implementation: on spec 0002, four small fixes took 46 steps against 36. Send review findings as a numbered list with the expected result of each one, and re-review the whole diff afterwards, because `beam-free` broke two unrelated tests with a scripted replace.
 - One new OpenCode session per attempt. For cumulative tokens and steps use `opencode session list` and `opencode session export <id>`; the session panel shows only the last request.
 - Docker: a named volume is seeded from the image only on first creation. `post-create.sh` re-syncs `node_modules` using a lockfile hash stamp.
 

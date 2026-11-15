@@ -1,6 +1,6 @@
 # Spec 0002: inventory domain core (Spike 2)
 
-Status: final, revision 2 (2026-11-15). Revision 1 left names and signatures open; attempt 1 filled the gap with guesses. This revision fixes the public names, the tests and the deletion rules.
+Status: implemented and merged into main (2026-11-15), revision 2. Revision 1 left names and signatures open; attempt 1 filled the gap with guesses. This revision fixes the public names, the tests and the deletion rules.
 
 Decision record: `docs/adr/0001-domain-code-layout.md`. Rules: AGENTS.md section 3 ("Backend layout rules"), section 6 ("Inventory", "Manual actions and admin") and section 7. Domain background: `docs/resumen-proyecto-vintage.md`, sections 4 and 12.
 

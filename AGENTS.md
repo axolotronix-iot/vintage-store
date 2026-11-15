@@ -58,6 +58,7 @@ Commands (run from the repository root):
 ├── backend/                # Django project (pyproject.toml, uv.lock, manage.py)
 │   ├── config/             # Django settings, URLs, WSGI/ASGI
 │   ├── accounts/           # Custom user model (AUTH_USER_MODEL = "accounts.User")
+│   ├── inventory/          # Piece, hold, audit record and the transition service (services.py)
 │   ├── templates/          # Project-level Django templates (base.html, home.html)
 │   ├── tests/              # pytest test suite
 │   └── frontend_dist/      # Vite build output read by django-vite (generated, git-ignored)
@@ -87,6 +88,11 @@ From `opencode.jsonc`:
 - **Git:** `status`, `diff`, `log`, `show` are allowed. `add` and `commit` require approval. `push`, `reset`, `clean`, `rebase`, `branch -D` and `config` are denied. Work on the current branch: the architect creates one branch per attempt. Never create or switch branches.
 - **Shell:** anything not explicitly allowed asks first. Allowed: `ls`, `pwd`, `rg`, `make test/lint/fmt/check/build`, `pytest`, `ruff`, `python manage.py check`, `python manage.py makemigrations`, `npm run build`. `sudo` is denied.
 - **Outside the project:** access to external directories requires approval.
+
+Not enforced by `opencode.jsonc`; follow them anyway:
+
+- **File edits:** edit files only with the edit tool. Never change files from the shell (`sed -i`, python scripts, redirections).
+- **One command per call:** run one command per call, from the repository root. Do not chain with `cd`, `&&`, `;` or pipes: a chained command always asks for approval. The only exception is `cd backend && python manage.py <command>` (section 2).
 
 ## 5. Language and conventions
 
