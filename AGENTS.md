@@ -73,7 +73,7 @@ Decided in `docs/adr/0001-domain-code-layout.md`.
 - `inventory/services.py` is the only code that writes piece state, piece channel, holds or audit records. Views, admin, management commands and imports call it.
 - Other apps may read `inventory` models but never write them. `inventory` never imports an app that depends on it.
 - Refer to the user with `settings.AUTH_USER_MODEL` or `get_user_model()`. Never import `django.contrib.auth.models.User`.
-- Tests go in `backend/tests/<app>/`.
+- Tests go in `backend/tests/<app>/`. Every test directory has an `__init__.py`.
 
 ## 4. Working limits
 

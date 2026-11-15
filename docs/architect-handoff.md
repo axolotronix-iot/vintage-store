@@ -1,6 +1,6 @@
 # Architect handoff
 
-Last updated: 2026-11-14. Keep this file short and current; replace stale items instead of appending.
+Last updated: 2026-11-15. Keep this file short and current; replace stale items instead of appending.
 
 ## How we work
 
@@ -20,19 +20,18 @@ Done and checked by the architect:
 - `make check` is green. pytest smoke tests and ruff are configured.
 - `opencode.jsonc` blocks `uv` commands and edits to `uv.lock`.
 - OpenCode loads AGENTS.md and answers questions about it correctly.
-- One small task was run with `opencode/beam-free` (health endpoint).
+- One small task was run with `opencode/beam-free` (health endpoint). Its code was removed afterwards.
 - `accounts` app with the custom user (spec 0001, ADR 0001), written by `opencode/beam-free`, merged into main. The development database was recreated and migrated with it.
 
 Pending:
 
-- Spike 2: domain core (states, atomic reservation, audit in the same transaction, concurrency test).
+- Spike 2: run `docs/specs/0002-inventory-domain-core.md` with OpenCode on a new attempt branch.
 - Spike 3: real data import with quarantine.
 - Run the three block tests in Claude Code (`uv --version`, edit `uv.lock`, `git push`) and check the Manual mode indicator in the VS Code extension.
 - Remove the stray user-level `ask` rule that only says "CLAUDE.md".
 - Decide whether `Edit(/backend/**)` and `Edit(/frontend/src/**)` go in `ask` in `.claude/settings.json` to enforce the product-code limit.
 - Claude config and workspace trust are not persisted across container rebuilds; decide on a compose volume plus `CLAUDE_CONFIG_DIR`.
 - Translate the Spanish comments in `opencode.jsonc` and the `make help` strings in the Makefile to English.
-- Decide whether `backend/tests/<app>/` directories need `__init__.py` (two test files with the same name in different apps may collide; not tested).
 - Decide the format of the piece public code before block 3 (quick entry with QR).
 - `make check` has no typecheck yet; the project summary (section 10) expects one.
 - Write the spec for the next block (given/when/then, acceptance criteria mapped to tests, explicit out-of-scope) in `docs/specs/`. Record design decisions in `docs/adr/`.
@@ -61,6 +60,7 @@ Pending:
 - `opencode pair` prints a one-time link for the background service. Forward its port in VS Code (49374 was observed).
 - Claude Code: `deny` beats `ask` beats `allow`, and specificity does not matter. `Edit` rules cover every editing tool. Bash rules are not a security boundary (`git -C . push` and `sh -c '...'` get past them). With a `CLAUDE.md` present, Claude reads it instead of `AGENTS.md`, which is why it imports `@AGENTS.md`.
 - The VS Code extension has had reports of commands running without a prompt in manual mode. Test the limits after configuring them.
+- The OpenCode background service requests `GET /health` on port 8000 about once a minute (observed 2026-11-14). The 404 lines in the dev server log come from it, not from project code. The cause was not investigated.
 - Docker: a named volume is seeded from the image only on first creation. `post-create.sh` re-syncs `node_modules` using a lockfile hash stamp.
 
 ## Model evaluation protocol
