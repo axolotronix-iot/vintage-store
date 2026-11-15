@@ -74,6 +74,7 @@ RUN mkdir -p \
         /home/node/.local/share/opencode \
         /home/node/.local/state/opencode \
         /home/node/.cache/uv \
+        /home/node/.claude \
         /opt/venv \
         /workspace/frontend \
     && chown -R node:node /home/node /opt/venv /workspace

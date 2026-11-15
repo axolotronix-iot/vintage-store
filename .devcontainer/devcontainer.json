@@ -20,7 +20,8 @@
         "ms-python.python",
         "charliermarsh.ruff",
         "batisteo.vscode-django",
-        "bradlc.vscode-tailwindcss"
+        "bradlc.vscode-tailwindcss",
+        "anthropic.claude-code"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/opt/venv/bin/python",
