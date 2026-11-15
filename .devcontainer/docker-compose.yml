@@ -2,6 +2,7 @@ name: vintage-dev
 
 services:
   workspace:
+    hostname: vintage
     build:
       # Repository root, so the Dockerfile can COPY the dependency manifests.
       context: ..
